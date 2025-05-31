@@ -1,7 +1,7 @@
 import { FTable, SearchBar, ProductDialog } from '../../component';
 import type { Product } from '../../utils';
 import { Box } from "@mui/material";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { getMethod, postMethod, putMethod, deleteMethod } from "../../utils/api.ts";
 
 const headers = [
@@ -9,7 +9,7 @@ const headers = [
     { name: 'name', text: 'Tên' },
     { name: 'price', text: 'Giá' },
     { name: 'remaining', text: 'Tồn' },
-    { name: 'action', text: '' }
+    { name: 'action', text: 'Delete' }
 ];
 
 export default () => {
@@ -31,14 +31,6 @@ export default () => {
         });
         setIsOpenDialog(true);
     };
-
-    const onUpdate = useCallback((id: string) => {
-        const productToUpdate = products.find(e => e.id === id);
-        if (productToUpdate) {
-            setCurProduct({ ...productToUpdate });
-            setIsOpenDialog(true);
-        }
-    }, [products]);
 
     const onSave = async () => {
         setIsOpenDialog(false);
@@ -97,7 +89,6 @@ export default () => {
                 <FTable
                     headers={headers}
                     rows={products}
-                    onUpdate={onUpdate}
                     onDelete={onDelete}
                 />
                 <ProductDialog

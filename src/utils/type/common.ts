@@ -14,7 +14,10 @@ export interface Product extends Master {
     remaining: number | null
 }
 
-export interface Order extends Master {
-    quantity: number
-    amount: number,
+export interface Order {
+    // product: Product | null;
+    id?: string
+    product_id: string
+    quantity: number | string
+    amount: number | string,
 }

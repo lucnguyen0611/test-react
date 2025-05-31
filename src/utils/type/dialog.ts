@@ -16,5 +16,6 @@ export interface ProductDialogProp extends DialogProp {
 
 export interface CustomerDialogProp extends DialogProp {
     order: Order
-    setCustomer: (order: Order) => void
+    setOrder: (order: Order) => void
+    products?: any
 }

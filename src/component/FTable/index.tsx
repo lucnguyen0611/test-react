@@ -8,14 +8,12 @@ import {
     TableRow
 } from "@mui/material";
 import type { Header } from '../../utils';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { memo } from 'react';
 
 interface FTable {
     headers: Header[];
     rows: any[];
-    onUpdate?: (id: string) => void;
     onDelete?: (id: string) => void;
     width?: number;
 }
@@ -23,7 +21,6 @@ interface FTable {
 const RenderActionBtn = (
     headers: Header[],
     rowId: number,
-    onUpdate?: () => void,
     onDelete?: () => void
 ) => {
     const keys = headers.map(header => header.name);
@@ -31,13 +28,12 @@ const RenderActionBtn = (
 
     return (
         <TableCell size={"small"} key={`action-${rowId}`}>
-            {onUpdate && <EditIcon color={'success'} onClick={onUpdate} sx={{ cursor: 'pointer', mr: 1 }} />}
             {onDelete && <DeleteOutlineIcon color={'error'} onClick={onDelete} sx={{ cursor: 'pointer' }} />}
         </TableCell>
     );
 };
 
-function FTableComponent({ headers, rows, onUpdate, onDelete, width }: FTable) {
+function FTableComponent({ headers, rows, onDelete, width }: FTable) {
     return (
         <TableContainer sx={{ maxWidth: width, margin: 'auto' }} component={Paper}>
             <Table>
@@ -61,7 +57,6 @@ function FTableComponent({ headers, rows, onUpdate, onDelete, width }: FTable) {
                                             return RenderActionBtn(
                                                 headers,
                                                 row.id,
-                                                () => onUpdate?.(row.id),
                                                 () => onDelete?.(row.id)
                                             );
                                         }

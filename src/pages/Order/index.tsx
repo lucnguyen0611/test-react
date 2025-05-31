@@ -1,81 +1,70 @@
-import type { Order } from '../../utils';
+import type { Order, Product } from '../../utils';
 import { FTable, SearchBar, OrderDialog } from '../../component';
 import { Box } from "@mui/material";
-import { useState, useEffect, useCallback } from "react";
-import { getMethod, postMethod, putMethod, deleteMethod } from "../../utils/api.ts";
+import { useState, useEffect } from "react";
+import { getMethod, postMethod, deleteMethod } from "../../utils/api.ts";
 
 const headers = [
     { name: 'id', text: 'ID' },
     { name: 'name', text: 'Product name' },
     { name: 'quantity', text: 'Quantity' },
     { name: 'amount', text: 'Amount' },
-    { name: 'action', text: '' }
+    { name: 'action', text: 'Delete' }
 ];
 
 export default () => {
     const [isOpenDialog, setIsOpenDialog] = useState(false);
     const [curOrder, setCurOrder] = useState<Order>({
         id: '',
-        name: '',
-        quantity: 0,
-        amount: 0,
+        product_id: '',
+        quantity: '',
+        amount: '',
     });
     const [orders, setOrders] = useState<Order[]>([]);
+    const [products, setProducts] = useState<Product[]>([])
 
     const onAdd = () => {
         setCurOrder({
             id: '',
-            name: '',
-            quantity: 0,
-            amount: 0,
+            product_id: '',
+            quantity: '',
+            amount: '',
         });
         setIsOpenDialog(true);
     };
 
-    const onUpdate = useCallback((id: string) => {
-        const orderToUpdate = orders.find(e => e.id === id);
-        if (orderToUpdate) {
-            setCurOrder({ ...orderToUpdate });
-            setIsOpenDialog(true);
-        }
-    }, [orders]);
-
     const onSave = async () => {
         setIsOpenDialog(false);
 
-        if (curOrder.id) {
-            const newOrder = await putMethod(`/orders/${curOrder.id}`, toBody());
-            const updateIndex = orders.findIndex(o => o.id === curOrder.id);
-            if (updateIndex !== -1) {
-                const updated = [...orders];
-                updated[updateIndex] = newOrder;
-                setOrders(updated);
-            }
-        } else {
-            const maxId = orders.reduce((max, o) => {
-                const num = parseInt(o.id, 10);
-                return isNaN(num) ? max : Math.max(max, num);
-            }, 0);
-            const newId = (maxId + 1).toString();
-            const newOrder = {
-                ...toBody(),
-                id: newId
-            };
-            const savedOrder = await postMethod('/orders', newOrder);
-            setOrders([...orders, savedOrder]);
-        }
+        const maxId = orders.reduce((max, o) => {
+            const num = parseInt(o.id, 10);
+            return isNaN(num) ? max : Math.max(max, num);
+        }, 0);
+        const newId = (maxId + 1).toString();
+
+        const newOrder = {
+            ...toBody(),
+            id: newId,
+        };
+
+        const savedOrder = await postMethod('/orders', newOrder);
+        setOrders([...orders, savedOrder]);
     };
 
+
     const toBody = () => ({
-        name: curOrder.name,
+        product_id: curOrder.product_id,
         quantity: curOrder.quantity,
         amount: curOrder.amount,
     });
 
     const onMounted = async () => {
-        const ordersData = await getMethod('/orders');
-        setOrders(ordersData);
-    };
+        const [ordersData, productData] = await Promise.all([
+            getMethod('/orders/'), getMethod('/products')
+        ])
+        setOrders(ordersData)
+        setProducts(productData)
+    }
 
     const onDelete = async (id: string) => {
         const result = await deleteMethod(`/orders/${id}`);
@@ -96,15 +85,16 @@ export default () => {
                 <FTable
                     headers={headers}
                     rows={orders}
-                    onUpdate={onUpdate}
                     onDelete={onDelete}
                 />
                 <OrderDialog
                     order={curOrder}
-                    setOrder={setCurOrder}
+                    products={products}
+                    setCurOrder={setCurOrder}
                     onSave={onSave}
                     isOpen={isOpenDialog}
                     onClose={() => setIsOpenDialog(false)}
+
                 />
             </Box>
         </>
