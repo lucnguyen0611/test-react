@@ -5,18 +5,8 @@ export interface Header {
 }
 
 interface Master {
-    id?: number
+    id?: string
     name: string
-}
-
-export interface Color extends Master {}
-
-export interface Employee extends Master{
-    age: number | null
-    address: string | null
-    salary: number | null
-    position: string | null
-    status: string | null
 }
 
 export interface Product extends Master {
@@ -24,16 +14,7 @@ export interface Product extends Master {
     remaining: number | null
 }
 
-export interface Customer extends Master {
-    companyName: string | null
-    address: string | null
-    description: string | null
-}
-
-export interface OrderDetail {
-    productId: number,
-    price: number,
+export interface Order extends Master {
     quantity: number
     amount: number,
-    isValid: boolean
 }

@@ -19,10 +19,10 @@ export default ({isOpen, onClose, product, setProduct, onSave}: ProductDialogPro
                     fullWidth name={"name"} label="Name" variant="standard"  onChange={onChange}
                 />
                 <TextField
-                    fullWidth name={"Price"} label="Price" variant="standard" onChange={onChange}
+                    fullWidth name={"price"} label="Price" variant="standard" onChange={onChange}
                 />
                 <TextField
-                    fullWidth name={"Remaining"} label="Remaining" variant="standard" onChange={onChange}
+                    fullWidth name={"remaining"} label="Remaining" variant="standard" onChange={onChange}
                 />
 
             </Stack>

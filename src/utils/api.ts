@@ -37,7 +37,7 @@ export const putMethod = async (endpoint: string, payload: any) => {
 
 export const deleteMethod = async (endpoint: string) => {
     try {
-        const {data} = await api.get(endpoint)
+        const {data} = await api.delete(endpoint)
         return data
     } catch (e) {
         console.log(e)

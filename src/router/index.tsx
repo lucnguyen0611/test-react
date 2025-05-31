@@ -5,13 +5,13 @@ import Order from '../pages/Order'
 
 const router = createBrowserRouter([
     {
-        path: "/product",
+        path: "/products",
         element: <Product/>,
     },
-    // {
-    //     path: "/order",
-    //     element: <Order/>,
-    // }
+    {
+        path: "/orders",
+        element: <Order/>,
+    }
 ]);
 
 export default router

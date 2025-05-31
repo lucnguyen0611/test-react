@@ -1,87 +1,104 @@
-import {FTable, FHeader, SearchBar, ProductDialog} from '../../component'
-import type { Product} from '../../utils'
-import {Box, Button} from "@mui/material";
-import {useState, useEffect, useCallback} from "react";
-import {getMethod, postMethod, putMethod} from "../../utils/api.ts";
+import { FTable, SearchBar, ProductDialog } from '../../component';
+import type { Product } from '../../utils';
+import { Box } from "@mui/material";
+import { useState, useEffect, useCallback } from "react";
+import { getMethod, postMethod, putMethod, deleteMethod } from "../../utils/api.ts";
 
-const headers: Header[] = [
-    {name: 'id', text: 'ID'},
-    {name: 'name', text: 'Ten'},
-    {name: 'price', text: 'Gia'},
-    {name: 'remaining', text: 'Ton'},
-
-]
-
+const headers = [
+    { name: 'id', text: 'ID' },
+    { name: 'name', text: 'Tên' },
+    { name: 'price', text: 'Giá' },
+    { name: 'remaining', text: 'Tồn' },
+    { name: 'action', text: '' }
+];
 
 export default () => {
-    const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false)
+    const [isOpenDialog, setIsOpenDialog] = useState(false);
     const [curProduct, setCurProduct] = useState<Product>({
-        id: 0,
+        id: '',
         name: '',
         price: 0,
         remaining: 0,
-    })
-
-    const [products, setProducts] = useState<Product[]>([])
-    // const [colors, setColors] = useState<Color[]>([])
+    });
+    const [products, setProducts] = useState<Product[]>([]);
 
     const onAdd = () => {
-        setIsOpenDialog(true)
-        console.log("hello")
-    }
+        setCurProduct({
+            id: '',
+            name: '',
+            price: 0,
+            remaining: 0,
+        });
+        setIsOpenDialog(true);
+    };
 
-    const onUpdate = useCallback((id: number) => {
-        // @ts-ignore
-        setCurProduct({...products.find(e => e.id === id)})
-        setIsOpenDialog(true)
-    }, [products])
+    const onUpdate = useCallback((id: string) => {
+        const productToUpdate = products.find(e => e.id === id);
+        if (productToUpdate) {
+            setCurProduct({ ...productToUpdate });
+            setIsOpenDialog(true);
+        }
+    }, [products]);
 
     const onSave = async () => {
-        console.log(curProduct)
-        setIsOpenDialog(false)
+        setIsOpenDialog(false);
 
         if (curProduct.id) {
-            const newProduct: Product = await putMethod(`/products/${curProduct.id}`, toBody())
-            const updateIndex = products.findIndex(
-                (e: Product) => Number(e.id) === Number(curProduct.id)
-            )
-            products[updateIndex] = newProduct
-            setProducts([...products])
+            // Update
+            const newProduct = await putMethod(`/products/${curProduct.id}`, toBody());
+            const updateIndex = products.findIndex(p => p.id === curProduct.id);
+            if (updateIndex !== -1) {
+                const updated = [...products];
+                updated[updateIndex] = newProduct;
+                setProducts(updated);
+            }
+        } else {
+            const maxId = products.reduce((max, p) => {
+                const num = parseInt(p.id, 10);
+                return isNaN(num) ? max : Math.max(max, num);
+            }, 0);
+            const newId = (maxId + 1).toString();
+            const newProduct = {
+                ...toBody(),
+                id: newId
+            };
+            const savedProduct = await postMethod('/products', newProduct);
+            setProducts([...products, savedProduct]);
         }
-        else {
-            const newProduct: Product = await postMethod('/products', toBody())
-            setProducts([...products, newProduct])
-        }
-    }
+    };
 
-    const toBody = () => {
-        return {
-            name: curProduct.name,
-            price: curProduct.price,
-            remaining: curProduct.remaining,
-        }
-    }
+    const toBody = () => ({
+        name: curProduct.name,
+        price: curProduct.price,
+        remaining: curProduct.remaining,
+    });
 
     const onMounted = async () => {
-        const productsData = await getMethod('/products')
+        const productsData = await getMethod('/products');
+        setProducts(productsData);
+    };
 
-        setProducts([...productsData])
-    }
+    const onDelete = async (id: string) => {
+        const result = await deleteMethod(`/products/${id}`);
+        if (result) {
+            setProducts(prd => prd.filter(pd => pd.id !== id));
+        }
+    };
 
     useEffect(() => {
-        onMounted()
-    }, [])
+        onMounted();
+    }, []);
 
     return (
         <>
-            <FHeader title={'Products'}/>
+            <h1 style={{ textAlign: 'center' }}>Products</h1>
             <Box className={'container'}>
-                <SearchBar onAdd={onAdd}/>
-
+                <SearchBar onAdd={onAdd} />
                 <FTable
                     headers={headers}
                     rows={products}
                     onUpdate={onUpdate}
+                    onDelete={onDelete}
                 />
                 <ProductDialog
                     product={curProduct}
@@ -92,5 +109,6 @@ export default () => {
                 />
             </Box>
         </>
-    )
-}
+    );
+};
+

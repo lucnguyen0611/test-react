@@ -1,40 +1,41 @@
 {
   "products": [
+    "products": [
+      {
+        "id": 1,
+        "name": "Product 1",
+        "price": 20000,
+        "remaining": 50
+      },
+      {
+        "id": 2,
+        "name": "Product 2",
+        "price": 8000,
+        "remaining": 103
+      },
+      {
+        "id": 3,
+        "name": "Product 3",
+        "price": "12",
+        "remaining": "1"
+      },
+      {
+        "id": 4,
+        "name": "Product 4",
+        "price": "1",
+        "remaining": "1"
+      }
+    ],
+  "orders": [
     {
-      "id": 1,
-      "name": "Product 1",
-      "price": 20000,
-      "remaining": 50
-    },
-    {
-      "id": 2,
-      "name": "Product 2",
-      "price": 8000,
-      "remaining": 103
-    },
-    {
-      "id": "12a7",
-      "name": "qq",
-      "price": 0,
-      "remaining": 0
-    },
-    {
-      "id": "7de4",
-      "name": "1",
-      "price": 0,
-      "remaining": 0
-    }
-  ],
-  "oder": [
-    {
-      "id": 1,
+      "id": "1",
       "date": "2025--525",
       "product-id": 2,
       "quantity": 2,
       "amount": 16000
     },
     {
-      "id": 2,
+      "id": "2",
       "date": "2025--525",
       "product-id": 1,
       "quantity": 2,
